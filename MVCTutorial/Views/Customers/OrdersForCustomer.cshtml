@@ -1,0 +1,17 @@
+﻿@model MVCTutorial.ViewModels.OrdersForCustomer
+@{
+    ViewBag.Title = "OrdersForCustomer";
+}
+
+<h2>OrdersForCustomer</h2>
+
+<h1>Order for customer @Model.Customer.Name</h1>
+
+@foreach(var order in Model.Orders) {
+
+    <p>
+        <span>@order.Description</span><br />
+        <span>@order.Total</span>
+    </p>
+
+}

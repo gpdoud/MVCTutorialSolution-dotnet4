@@ -7,120 +7,115 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using MVCTutorial.Models;
-using MVCTutorial.ViewModels;
 
 namespace MVCTutorial.Controllers
 {
-    public class CustomersController : Controller
+    public class OrderlinesController : Controller
     {
         private CustomerAppContext db = new CustomerAppContext();
 
-		public ActionResult OrdersForCustomer(int? id) {
-			OrdersForCustomer ordersForCustomer = new OrdersForCustomer();
-			var customer = db.Customers.Find(id);
-			var orders = db.Orders.Where(o => o.CustomerId == id).ToList();
-			ordersForCustomer.Customer = customer;
-			ordersForCustomer.Orders = orders;
-			return View(ordersForCustomer);
-		}
-
-		// GET: Customers
-		public ActionResult Index()
+        // GET: Orderlines
+        public ActionResult Index()
         {
-            return View(db.Customers.ToList());
+            var orderlines = db.Orderlines.Include(o => o.Order);
+            return View(orderlines.ToList());
         }
 
-        // GET: Customers/Details/5
+        // GET: Orderlines/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Customer customer = db.Customers.Find(id);
-            if (customer == null)
+            Orderline orderline = db.Orderlines.Find(id);
+            if (orderline == null)
             {
                 return HttpNotFound();
             }
-            return View(customer);
+            return View(orderline);
         }
 
-        // GET: Customers/Create
+        // GET: Orderlines/Create
         public ActionResult Create()
         {
+            ViewBag.OrderId = new SelectList(db.Orders, "Id", "Description");
             return View();
         }
 
-        // POST: Customers/Create
+        // POST: Orderlines/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,City,State,TotalSales")] Customer customer)
+        public ActionResult Create([Bind(Include = "Id,OrderId,Product,Quantity,Price")] Orderline orderline)
         {
             if (ModelState.IsValid)
             {
-                db.Customers.Add(customer);
+                db.Orderlines.Add(orderline);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(customer);
+            ViewBag.OrderId = new SelectList(db.Orders, "Id", "Description", orderline.OrderId);
+            return View(orderline);
         }
 
-        // GET: Customers/Edit/5
+        // GET: Orderlines/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Customer customer = db.Customers.Find(id);
-            if (customer == null)
+            Orderline orderline = db.Orderlines.Find(id);
+            if (orderline == null)
             {
                 return HttpNotFound();
             }
-            return View(customer);
+            ViewBag.OrderId = new SelectList(db.Orders, "Id", "Description", orderline.OrderId);
+            return View(orderline);
         }
 
-        // POST: Customers/Edit/5
+        // POST: Orderlines/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,City,State,TotalSales")] Customer customer)
+        public ActionResult Edit([Bind(Include = "Id,OrderId,Product,Quantity,Price")] Orderline orderline)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(customer).State = EntityState.Modified;
+                db.Entry(orderline).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(customer);
+            ViewBag.OrderId = new SelectList(db.Orders, "Id", "Description", orderline.OrderId);
+            return View(orderline);
         }
 
-        // GET: Customers/Delete/5
+        // GET: Orderlines/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Customer customer = db.Customers.Find(id);
-            if (customer == null)
+            Orderline orderline = db.Orderlines.Find(id);
+            if (orderline == null)
             {
                 return HttpNotFound();
             }
-            return View(customer);
+            return View(orderline);
         }
 
-        // POST: Customers/Delete/5
+        // POST: Orderlines/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Customer customer = db.Customers.Find(id);
-            db.Customers.Remove(customer);
+            Orderline orderline = db.Orderlines.Find(id);
+            db.Orderlines.Remove(orderline);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
